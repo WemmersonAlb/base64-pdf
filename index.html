@@ -1,35 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor base64 para pdf</title>
     <style>
         body {
-            background-color: black;
-            color: white;
+            background-color: #2c3e50;
+            color: #ecf0f1;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .navbar {
-            background-color: white;
+            background-color: #ffffff;
+            width: 100%;
             padding: 1em;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .navbar h1 {
-            color: red;
+            color: #e74c3c;
             margin: 0;
         }
         .container {
+            max-width: 800px;
+            width: 100%;
             padding: 2em;
-            text-align: center;
+            box-sizing: border-box;
         }
         textarea {
             width: 100%;
             height: 200px;
             margin-bottom: 1em;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            padding: 1em;
+            font-size: 1em;
+            background-color: #34495e;
+            color: #ecf0f1;
+            resize: vertical;
         }
-        padding: 0.5em 1em;
+        button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 0.75em 1.5em;
             margin: 0.5em;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #c0392b;
         }
         .pdf-container {
             margin-top: 2em;
@@ -37,6 +64,9 @@
         .pdf-container iframe {
             width: 100%;
             height: 500px;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -57,20 +87,25 @@
     </div>
     <script>
         function convertToPDF() {
-            const base64String = document.getElementById('base64Input').value;
-            const pdfData = atob(base64String);
-            const byteArray = new Uint8Array(pdfData.length);
-            for (let i = 0; i < pdfData.length; i++) {
-                byteArray[i] = pdfData.charCodeAt(i);
+            const base64String = document.getElementById('base64Input').value.trim();
+            if (!base64String) return alert('Por favor, cole uma string base64 válida.');
+            try {
+                const pdfData = atob(base64String);
+                const byteArray = new Uint8Array(pdfData.length);
+                for (let i = 0; i < pdfData.length; i++) {
+                    byteArray[i] = pdfData.charCodeAt(i);
+                }
+                const blob = new Blob([byteArray], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                document.getElementById('pdfViewer').src = url;
+                document.getElementById('pdfContainer').style.display = 'block';
+            } catch (e) {
+                alert('Erro ao converter. Verifique se a string base64 está correta.');
             }
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            document.getElementById('pdfViewer').src = url;
-            document.getElementById('pdfContainer').style.display = 'block';
         }
 
         function downloadPDF() {
-            const base64String = document.getElementById('base64Input').value;
+            const base64String = document.getElementById('base64Input').value.trim();
             const pdfData = atob(base64String);
             const byteArray = new Uint8Array(pdfData.length);
             for (let i = 0; i < pdfData.length; i++) {
@@ -79,7 +114,7 @@
             const blob = new Blob([byteArray], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'converted.pdf';
+            link.download = 'convertido.pdf';
             link.click();
         }
 
